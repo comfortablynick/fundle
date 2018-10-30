@@ -15,7 +15,7 @@ you can use the [danhper/oh-my-fish-core](https://github.com/danhper/oh-my-fish-
 You can use the installer:
 
 ```sh
-curl -sfL https://git.io/fundle-install | fish
+curl -sfL https://git.io/fxdrv | fish
 ```
 
 Or if you don't like to pipe to a shell, just drop [fundle.fish](functions/fundle.fish)
@@ -32,15 +32,7 @@ If you want to automatically install fundle when it is not present, you can add
 the following at the top of your `~/.config/fish/config.fish`.
 
 ```fish
-if not functions -q fundle; eval (curl -sfL https://git.io/fundle-install); end
-```
-
-### ArchLinux
-
-fundle is available on the AUR, so you can install it system wide with
-
-```
-yaourt -S fundle-git
+if not functions -q fundle; eval (curl -sfL https://git.io/fxdrv); end
 ```
 
 ### Updating
