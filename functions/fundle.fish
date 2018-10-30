@@ -59,12 +59,12 @@ function __fundle_date -d "returns a date"
 end
 
 function __fundle_self_update -d "updates fundle"
-	set -l fundle_repo_url "https://github.com/tuvistavie/fundle.git"
+	set -l fundle_repo_url "https://github.com/comfortablynick/fundle.git"
 	set -l latest (command git ls-remote --tags $fundle_repo_url | sed -n -e 's|.*refs/tags/v\(.*\)|\1|p' | tail -n 1)
 	if test (__fundle_compare_versions $latest (__fundle_version)) != "gt"
 		echo "fundle is already up to date"; and return 0
 	else
-		set -l file_url_template 'https://raw.githubusercontent.com/tuvistavie/fundle/VERSION/functions/fundle.fish'
+		set -l file_url_template 'https://raw.githubusercontent.com/comfortablynick/fundle/VERSION/functions/fundle.fish'
 		set -l file_url (echo $file_url_template | sed -e "s/VERSION/v$latest/")
 		set -l tmp_file (mktemp /tmp/fundle.XXX)
 		set -l update_message "fundle has been updated to version $latest"
@@ -106,10 +106,10 @@ end
 
 function __fundle_plugins_dir -d "returns fundle directory"
 	if test -z "$fundle_plugins_dir"
-		if test -n "$XDG_CONFIG_HOME"
-			echo $XDG_CONFIG_HOME/fish/fundle
+		if test -n "$XDG_DATA_HOME"
+			echo $XDG_DATA_HOME/fundle
 		else
-			echo $HOME/.config/fish/fundle
+			echo $HOME/.local/share/fundle
 		end
 	else
 		echo $fundle_plugins_dir
@@ -184,7 +184,7 @@ function __fundle_show_doc_msg -d "show a link to fundle docs"
 	if test (count $argv) -ge 1
 		echo $argv
 	end
-	echo "See the docs for more info. https://github.com/tuvistavie/fundle"
+	echo "See the docs for more info. https://github.com/comfortablynick/fundle"
 end
 
 function __fundle_load_plugin -a plugin -a path -a fundle_dir -a profile -d "load a plugin"
