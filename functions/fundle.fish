@@ -356,8 +356,7 @@ function __fundle_plugin -d "add plugin to fundle" -a name
 		end
 	end
 	test -z "$plugin_url"; and set plugin_url (__fundle_get_url $name)
-    test $if_eval && echo "true" || echo "false"
-    # Condition is working right; what do I have to do to get it to install?
+    # test $if_eval && echo "true" || echo "false"
 	if not contains $name $__fundle_plugin_names; and test $if_eval
 		set -g __fundle_plugin_names $__fundle_plugin_names $name
 		set -g __fundle_plugin_urls $__fundle_plugin_urls $plugin_url
