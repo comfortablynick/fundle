@@ -322,6 +322,8 @@ end
 function __fundle_plugin -d "add plugin to fundle" -a name
 	set -l plugin_url ""
 	set -l plugin_path "."
+    set -l if_cond ""
+    set -l if_eval true
 	set -l argv_count (count $argv)
 	set -l skip_next true
 	if test $argv_count -eq 0 -o -z "$argv"
@@ -340,6 +342,11 @@ function __fundle_plugin -d "add plugin to fundle" -a name
 					set plugin_path (__fundle_next_arg $i $argv)
 					test $status -eq 1; and echo $plugin_path; and return 1
 					set skip_next true
+                case '--if'
+                    set if_cond (__fundle_next_arg $i $argv)
+                    set if_eval (eval $if_cond)
+                    # test $status -eq 1; and echo $plugin_path; and return 1
+                    set skip_next true
 				case '--*'
 					echo "unknown flag $arg"; and return 1
 				case '*'
@@ -349,8 +356,9 @@ function __fundle_plugin -d "add plugin to fundle" -a name
 		end
 	end
 	test -z "$plugin_url"; and set plugin_url (__fundle_get_url $name)
-
-	if not contains $name $__fundle_plugin_names
+    test $if_eval && echo "true" || echo "false"
+    # Condition is working right; what do I have to do to get it to install?
+	if not contains $name $__fundle_plugin_names; and test $if_eval
 		set -g __fundle_plugin_names $__fundle_plugin_names $name
 		set -g __fundle_plugin_urls $__fundle_plugin_urls $plugin_url
 		set -g __fundle_plugin_name_paths $__fundle_plugin_name_paths $name:$plugin_path
@@ -420,3 +428,5 @@ function fundle -d "run fundle"
 			return 1
 	end
 end
+
+# vim:set fdm=expr:fde=getline(v:lnum)=~'^function.*$'?'>1':1:
