@@ -1,9 +1,10 @@
 # FUNDLE -- Fish plugin manager
 set __fundle_current_version '0.6.2'
-function __fundle_seq -a upto
+function __fundle_seq -a upto # {{{
 	seq 1 1 $upto 2>/dev/null
 end
-function __fundle_next_arg -a index
+# }}}
+function __fundle_next_arg -a index # {{{
 	set -l args $argv[2..-1]
 	set -l arg_index (math $index + 1)
 	if test (count $args) -lt $arg_index
@@ -18,7 +19,8 @@ function __fundle_next_arg -a index
 			echo $arg; and return 0
 	end
 end
-function __fundle_compare_versions -a version1 -a version2
+# }}}
+function __fundle_compare_versions -a version1 -a version2 # {{{
 	for i in (__fundle_seq 4)
 		set -l v1 (echo $version1 | cut -d '.' -f $i | sed -Ee 's/[a-z]+//g')
 		set -l v2 (echo $version2 | cut -d '.' -f $i | sed -Ee 's/[a-z]+//g')
@@ -30,20 +32,23 @@ function __fundle_compare_versions -a version1 -a version2
 	end
 	echo -n "eq"; and return 0
 end
-function __fundle_profile -d "runs a function in profile mode"
+# }}}
+function __fundle_profile -d "runs a function in profile mode" # {{{
 	set -l start_time (__fundle_date +%s%N)
 	eval $argv
 	set -l ellapsed_time (math \((__fundle_date +%s%N) - $start_time\) / 1000)
 	echo "$argv": {$ellapsed_time}us
 end
-function __fundle_profile_or_run -a profile
+# }}}
+function __fundle_profile_or_run -a profile # {{{
 	if test $profile -eq 1
 		__fundle_profile $argv[2..-1]
 	else
 		eval $argv[2..-1]
 	end
 end
-function __fundle_date -d "returns a date"
+# }}}
+function __fundle_date -d "returns a date" # {{{
 	set -l d (date +%s%N)
 	if echo $d | grep -v 'N' > /dev/null 2>&1
 		echo $d
@@ -52,7 +57,8 @@ function __fundle_date -d "returns a date"
 	end
 	return 0
 end
-function __fundle_self_update -d "updates fundle"
+# }}}
+function __fundle_self_update -d "updates fundle" # {{{
 	set -l fundle_repo_url "https://github.com/comfortablynick/fundle.git"
 	set -l latest (command git ls-remote --tags $fundle_repo_url | sed -n -e 's|.*refs/tags/v\(.*\)|\1|p' | tail -n 1)
 	if test (__fundle_compare_versions $latest (__fundle_version)) != "gt"
@@ -65,7 +71,8 @@ function __fundle_self_update -d "updates fundle"
 		curl -Ls $file_url > $tmp_file; and mv $tmp_file (status -f); and echo $update_message; and return 0
 	end
 end
-function __fundle_url_rev -d "prints the revision from the url" -a git_url
+# }}}
+function __fundle_url_rev -d "prints the revision from the url" -a git_url # {{{
 	set -l rev (echo $git_url | cut -d '#' -f 2 -s)
 	if test -n "$rev"
 		echo $rev
@@ -73,10 +80,12 @@ function __fundle_url_rev -d "prints the revision from the url" -a git_url
 		echo master
 	end
 end
-function __fundle_remote_url -d "prints the remote url from the full git url" -a git_url
+# }}}
+function __fundle_remote_url -d "prints the remote url from the full git url" -a git_url # {{{
 	echo $git_url | cut -d '#' -f 1
 end
-function __fundle_rev_parse -d "prints the revision if any" -a dir -a commitish
+# }}}
+function __fundle_rev_parse -d "prints the revision if any" -a dir -a commitish # {{{
 	set -l sha (command git --git-dir $dir rev-parse -q --verify $commitish 2>/dev/null)
 	if test $status -eq 0
 		echo -n $sha
@@ -84,7 +93,8 @@ function __fundle_rev_parse -d "prints the revision if any" -a dir -a commitish
 	end
 	return 1
 end
-function __fundle_commit_sha -d "returns sha of the commit-ish" -a dir -a commitish
+# }}}
+function __fundle_commit_sha -d "returns sha of the commit-ish" -a dir -a commitish # {{{
 	if test -d "$dir/.git"
 		set dir "$dir/.git"
 	end
@@ -93,7 +103,8 @@ function __fundle_commit_sha -d "returns sha of the commit-ish" -a dir -a commit
 	end
 	__fundle_rev_parse $dir $commitish
 end
-function __fundle_plugins_dir -d "returns fundle directory"
+# }}}
+function __fundle_plugins_dir -d "returns fundle directory" # {{{
 	if test -z "$fundle_plugins_dir"
 		if test -n "$XDG_DATA_HOME"
 			echo $XDG_DATA_HOME/fundle
@@ -104,14 +115,16 @@ function __fundle_plugins_dir -d "returns fundle directory"
 		echo $fundle_plugins_dir
 	end
 end
-function __fundle_no_git -d "check if git is installed"
+# }}}
+function __fundle_no_git -d "check if git is installed" # {{{
 	if not which git > /dev/null 2>&1
 		echo "git needs to be installed and in the path"
 		return 0
 	end
 	return 1
 end
-function __fundle_check_date -d "check date"
+# }}}
+function __fundle_check_date -d "check date" # {{{
 	if date +%s%N | grep -v 'N' > /dev/null 2>&1
 		return 0
 	end
@@ -121,14 +134,17 @@ function __fundle_check_date -d "check date"
 	echo "You need to have a GNU date compliant date installed to use profiling. Use 'brew install coreutils' on OSX"
 	return 1
 end
-function __fundle_get_url -d "returns the url for the given plugin" -a repo
+# }}}
+function __fundle_get_url -d "returns the url for the given plugin" -a repo # {{{
 	echo "https://github.com/$repo.git"
 end
-function __fundle_update_plugin -d "update the given plugin" -a git_dir -a remote_url
+# }}}
+function __fundle_update_plugin -d "update the given plugin" -a git_dir -a remote_url # {{{
 	command git --git-dir=$git_dir remote set-url origin $remote_url 2>/dev/null; and \
 	command git --git-dir=$git_dir fetch -q 2>/dev/null
 end
-function __fundle_install_plugin -d "install/update the given plugin" -a plugin -a git_url
+# }}}
+function __fundle_install_plugin -d "install/update the given plugin" -a plugin -a git_url # {{{
 	if __fundle_no_git
 		return 1
 	end
@@ -163,13 +179,15 @@ function __fundle_install_plugin -d "install/update the given plugin" -a plugin 
 		return 1
 	end
 end
-function __fundle_show_doc_msg -d "show a link to fundle docs"
+# }}}
+function __fundle_show_doc_msg -d "show a link to fundle docs" # {{{
 	if test (count $argv) -ge 1
 		echo $argv
 	end
 	echo "See the docs for more info. https://github.com/comfortablynick/fundle"
 end
-function __fundle_load_plugin -a plugin -a path -a fundle_dir -a profile -d "load a plugin"
+# }}}
+function __fundle_load_plugin -a plugin -a path -a fundle_dir -a profile -d "load a plugin" # {{{
 	if begin; set -q __fundle_loaded_plugins; and contains $plugin $__fundle_loaded_plugins; end
 		return 0
 	end
@@ -225,7 +243,8 @@ function __fundle_load_plugin -a plugin -a path -a fundle_dir -a profile -d "loa
 
 	emit "init_$plugin_name" $plugin_dir
 end
-function __fundle_bind -d "set up bindings"
+# }}}
+function __fundle_bind -d "set up bindings" # {{{
 	if functions -q fish_user_key_bindings; and not functions -q __fish_user_key_bindings
 		functions -c fish_user_key_bindings __fish_user_key_bindings
 	end
@@ -239,7 +258,8 @@ function __fundle_bind -d "set up bindings"
 		end
 	end
 end
-function __fundle_init -d "initialize fundle"
+# }}}
+function __fundle_init -d "initialize fundle" # {{{
 	set -l fundle_dir (__fundle_plugins_dir)
 
 	if test (count $__fundle_plugin_names) -eq 0
@@ -261,7 +281,8 @@ Try reloading your shell if you just edited your configuration."
 
 	__fundle_bind
 end
-function __fundle_install -d "install plugin"
+# }}}
+function __fundle_install -d "install plugin" # {{{
 	if test (count $__fundle_plugin_names) -eq 0
 		__fundle_show_doc_msg "No plugin registered. You need to call 'fundle plugin NAME' before using 'fundle install'"
 	end
@@ -284,7 +305,8 @@ function __fundle_install -d "install plugin"
 		__fundle_install $argv
 	end
 end
-function __fundle_clean -d "cleans fundle directory"
+# }}}
+function __fundle_clean -d "cleans fundle directory" # {{{
 	set -l fundle_dir (__fundle_plugins_dir)
 	set -l used_plugins (__fundle_list -s)
 	set -l installed_plugins (find $fundle_dir -mindepth 2 -maxdepth 2 -type d)
@@ -296,7 +318,8 @@ function __fundle_clean -d "cleans fundle directory"
 		end
 	end
 end
-function __fundle_plugin --d 'add plugin to fundle'
+# }}}
+function __fundle_plugin --d 'add plugin to fundle' # {{{
 	set -l options 'u/url=' 'p/path=' 'c/cond=' 'h/help' 'd/debug'
     set -l help_txt "usage: fundle plugin NAME [[--url URL ] [--path PATH] [--cond CONDITION]]"
     test -z "$argv" && echo $help_txt && return 1
@@ -350,7 +373,8 @@ function __fundle_plugin --d 'add plugin to fundle'
         echo "----- END DEBUG -----"
     end
 end
-function __fundle_plug --d 'add plugin to fundle'
+# }}}
+function __fundle_plug --d 'add plugin to fundle' # {{{
     set -l help_txt "usage: fundle plugin NAME [[--url URL ] [--path PATH] [--cond CONDITION]]"
     test -z "$argv" && echo $help_txt && return 1
 
@@ -400,13 +424,16 @@ function __fundle_plug --d 'add plugin to fundle'
         echo "----- END DEBUG -----"
     end
 end
-function __fundle_version -d "prints fundle version"
+# }}}
+function __fundle_version -d "prints fundle version" # {{{
 	echo $__fundle_current_version
 end
-function __fundle_print_help -d "prints fundle help"
+# }}}
+function __fundle_print_help -d "prints fundle help" # {{{
 	echo "usage: fundle (init | plugin | list | install | update | clean | self-update | version | help)"
 end
-function __fundle_list -d "list registered plugins"
+# }}}
+function __fundle_list -d "list registered plugins" # {{{
 	if begin; contains -- -s $argv; or contains -- --short $argv; end
 		for name in $__fundle_plugin_names
 			echo $name
@@ -417,7 +444,8 @@ function __fundle_list -d "list registered plugins"
 		end
 	end
 end
-function fundle -d "run fundle"
+# }}}
+function fundle -d "run fundle" # {{{
 	if __fundle_no_git
 		return 1
 	end
@@ -463,4 +491,5 @@ function fundle -d "run fundle"
             return 0
 	end
 end
-# vim:set fdm=expr:fde=getline(v:lnum)=~'^function.*$'?'>1':1:
+# }}}
+# vim:set fdm=marker
